@@ -61,29 +61,40 @@ class ChangeTextBehaviorKtTest {
      * [androidx.test.rule.ActivityTestRule].
      */
     @get:Rule var activityScenarioRule = activityScenarioRule<MainActivity>()
-    val STRING_TO_BE_TYPED = "I like mobile testing"
 
     @Test
-    fun changeText_sameActivity() {
-
+    fun changeText_sameActivity_showsEnteredFood() {
+        val favoriteFood = "Khinkali"
         // Type text and then press the button.
         onView(withId(R.id.editTextUserInput))
-                .perform(typeText(STRING_TO_BE_TYPED), closeSoftKeyboard())
+                .perform(typeText(favoriteFood), closeSoftKeyboard())
         onView(withId(R.id.changeTextBt)).perform(click())
 
 
         // Check that the text was changed.
-        onView(withId(R.id.textToBeChanged)).check(matches(withText(STRING_TO_BE_TYPED)))
+        onView(withId(R.id.textToBeChanged)).check(matches(withText(favoriteFood)))
     }
 
     @Test
-    fun changeText_newActivity() {
+    fun changeText_newActivity_showsSecondMovieOnNextScreen() {
+        val firstMovie = "Forrest Gump"
+        val secondMovie = "Green Book"
         // Type text and then press the button.
-        onView(withId(R.id.editTextUserInput)).perform(typeText(STRING_TO_BE_TYPED),
+        onView(withId(R.id.editTextUserInput)).perform(typeText(firstMovie),
                 closeSoftKeyboard())
+        onView(withId(R.id.changeTextBt)).perform(click())
+
+        // This view is in a different Activity, no need to tell Espresso.
+        onView(withId(R.id.textToBeChanged)).check(matches(withText(firstMovie)))
+
+        onView(withId(R.id.editTextUserInput))
+            .perform(clearText(), typeText(secondMovie), closeSoftKeyboard())
+
+        // Tap "Open activity and change text".
         onView(withId(R.id.activityChangeTextBtn)).perform(click())
 
         // This view is in a different Activity, no need to tell Espresso.
-        onView(withId(R.id.show_text_view)).check(matches(withText(STRING_TO_BE_TYPED)))
+        onView(withId(R.id.show_text_view))
+            .check(matches(withText(secondMovie)))
     }
 }
